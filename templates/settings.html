@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2><i class="fa-solid fa-database"></i> Data Management</h2>
+    <p style="color: var(--secondary); margin-bottom: 2rem;">Manage your local database and cached files.</p>
+
+    <form action="{{ url_for('settings') }}" method="post"
+        onsubmit="return confirm('Are you sure? This will delete all candidates and jobs.');">
+        <input type="hidden" name="action" value="clear_data">
+        <div style="padding: 1.5rem; background: #fee2e2; border-radius: 0.5rem; border: 1px solid #fecaca;">
+            <h3 style="color: #991b1b; margin-bottom: 0.5rem;">Reset Application</h3>
+            <p style="color: #7f1d1d; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                This action will permanently delete all saved candidates, job descriptions, and reset the database.
+            </p>
+            <button type="submit" class="btn-primary"
+                style="background-color: var(--danger); border: none; width: 100%;">
+                <i class="fa-solid fa-trash-can"></i> Clear All Data
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

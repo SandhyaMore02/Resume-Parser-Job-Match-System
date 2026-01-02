@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block header %}Report History{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2><i class="fa-solid fa-file-pdf"></i> Generated Reports</h2>
+    <p style="color: var(--secondary); margin-bottom: 1.5rem;">Access previously generated resume analysis reports.</p>
+
+    <div style="display: grid; gap: 1rem;">
+        {% for file in files %}
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--background); border-radius: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fa-solid fa-file-pdf" style="color: var(--danger); font-size: 1.5rem;"></i>
+                <div>
+                    <div style="font-weight: 500;">{{ file }}</div>
+                    <!-- Mock Date for file -->
+                    <small style="color: var(--secondary);">PDF Document</small>
+                </div>
+            </div>
+            <a href="{{ url_for('static', filename='uploads/' + file) }}" target="_blank" class="btn-secondary">
+                <i class="fa-solid fa-download"></i> Download
+            </a>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 2rem; color: var(--secondary); font-style: italic;">
+            No reports generated yet.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

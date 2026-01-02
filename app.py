@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from resume_parser import parse_resume
 from job_matcher import get_match_score, find_matching_skills
 from report_generator import generate_report
+import db_handler
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey' # Change this in production
@@ -51,6 +52,19 @@ def index():
                 report_path = os.path.join(app.config['UPLOAD_FOLDER'], report_filename)
                 generate_report(resume_data, match_score, matching_skills, missing_skills, report_path)
 
+                # Save to Database
+                candidate_entry = {
+                    "name": resume_data.get('name'),
+                    "email": resume_data.get('email'),
+                    "phone": resume_data.get('phone'),
+                    "experience": resume_data.get('experience'),
+                    "match_score": match_score,
+                    "skills": matching_skills,
+                    "report_file": report_filename,
+                    "job_role": "analyzed_role" # Placeholder, could be extracted from JD title
+                }
+                db_handler.add_candidate(candidate_entry)
+
                 return render_template('index.html', 
                                        match_score=match_score, 
                                        resume_data=resume_data,
@@ -69,19 +83,41 @@ def index():
 
 @app.route('/candidates')
 def candidates():
-    return render_template('placeholder.html', title='Candidates')
+    all_candidates = db_handler.get_candidates()
+    return render_template('candidates.html', candidates=all_candidates)
 
-@app.route('/jobs')
+@app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
-    return render_template('placeholder.html', title='Job Listings')
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        if title and description:
+            db_handler.add_job(title, description)
+            flash('Job saved successfully!')
+        return redirect(url_for('jobs'))
+        
+    all_jobs = db_handler.get_jobs()
+    return render_template('jobs.html', jobs=all_jobs)
 
 @app.route('/reports')
 def reports():
-    return render_template('placeholder.html', title='Reports')
+    # List files in uploads directory
+    files = []
+    upload_dir = app.config['UPLOAD_FOLDER']
+    if os.path.exists(upload_dir):
+        for f in os.listdir(upload_dir):
+            if f.endswith('.pdf') and f.startswith('report_'):
+                files.append(f)
+    return render_template('reports.html', files=files)
 
-@app.route('/settings')
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    return render_template('placeholder.html', title='Settings')
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'clear_data':
+            db_handler.clear_db()
+            flash('All data has been cleared.')
+    return render_template('settings.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

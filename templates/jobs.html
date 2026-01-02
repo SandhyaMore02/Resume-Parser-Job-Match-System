@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block header %}Job Registry{% endblock %}
+
+{% block content %}
+<!-- Add Job Form -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2><i class="fa-solid fa-plus-circle"></i> Add New Job Description</h2>
+    </div>
+    <form action="{{ url_for('jobs') }}" method="post" style="display: grid; gap: 1rem;">
+        <div>
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Job Title</label>
+            <input type="text" name="title" placeholder="e.g. Senior Python Developer" required
+                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+        </div>
+        <div>
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Job Description</label>
+            <textarea name="description" rows="3" placeholder="Paste full JD here..." required></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="justify-self: start;">Save Job</button>
+    </form>
+</div>
+
+<!-- Saved Jobs List -->
+<div class="jobs-grid"
+    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for job in jobs %}
+    <div class="card" style="display: flex; flex-direction: column; height: 100%;">
+        <div style="margin-bottom: 1rem;">
+            <h3 style="margin-bottom: 0.5rem; color: var(--primary);">{{ job.title }}</h3>
+            <span style="font-size: 0.8rem; color: var(--secondary);"><i class="fa-regular fa-calendar"></i> Added: {{
+                job.date }}</span>
+        </div>
+        <div
+            style="flex: 1; margin-bottom: 1rem; color: var(--text-main); font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;">
+            {{ job.description }}
+        </div>
+        <div style="padding-top: 1rem; border-top: 1px solid var(--border); margin-top: auto;">
+            <button class="btn-secondary"
+                onclick="copyToClipboard('{{ job.description|replace('\n', '\\n')|replace('\'', '\\\'') }}')"
+                style="width: 100%; justify-content: center;">
+                <i class="fa-regular fa-copy"></i> Copy JD
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--secondary);">
+        <p>No jobs saved yet.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Job Description copied to clipboard!');
+        });
+    }
+</script>
+{% endblock %}
