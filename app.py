@@ -60,6 +60,8 @@ def index():
                     "experience": resume_data.get('experience'),
                     "match_score": match_score,
                     "skills": matching_skills,
+                    "education": resume_data.get('education'),
+                    "links": resume_data.get('links'),
                     "report_file": report_filename,
                     "job_role": "analyzed_role" # Placeholder, could be extracted from JD title
                 }

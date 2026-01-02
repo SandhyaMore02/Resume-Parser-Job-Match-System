@@ -66,6 +66,27 @@
             <li><i class="fa-solid fa-user"></i> {{ resume_data.name }}</li>
             <li><i class="fa-solid fa-envelope"></i> {{ resume_data.email if resume_data.email else 'N/A' }}</li>
             <li><i class="fa-solid fa-phone"></i> {{ resume_data.phone if resume_data.phone else 'N/A' }}</li>
+
+            {% if resume_data.links.linkedin %}
+            <li><i class="fa-brands fa-linkedin"></i> <a href="{{ resume_data.links.linkedin }}"
+                    target="_blank">LinkedIn</a></li>
+            {% endif %}
+
+            {% if resume_data.links.github %}
+            <li><i class="fa-brands fa-github"></i> <a href="{{ resume_data.links.github }}" target="_blank">GitHub</a>
+            </li>
+            {% endif %}
+
+            {% if resume_data.education %}
+            <li style="align-items: flex-start; margin-top: 0.5rem;">
+                <i class="fa-solid fa-graduation-cap" style="margin-top: 4px;"></i>
+                <div>
+                    {% for edu in resume_data.education[:2] %}
+                    <div style="font-size: 0.85rem; margin-bottom: 2px;">{{ edu }}</div>
+                    {% endfor %}
+                </div>
+            </li>
+            {% endif %}
         </ul>
     </div>
 </div>

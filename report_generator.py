@@ -32,6 +32,27 @@ def generate_report(resume_data, match_score, matching_skills, missing_skills, f
     info += f"Experience: {resume_data.get('experience', 0)} years detected"
     pdf.chapter_body(info)
     
+    # Links
+    links = resume_data.get('links', {})
+    if links:
+        link_text = ""
+        if links.get('linkedin'): link_text += f"LinkedIn: {links['linkedin']}\n"
+        if links.get('github'): link_text += f"GitHub: {links['github']}\n"
+        for p in links.get('portfolio', []): link_text += f"Portfolio: {p}\n"
+        
+        if link_text:
+            pdf.chapter_title("Online Presence")
+            pdf.chapter_body(link_text)
+            
+    # Education
+    education = resume_data.get('education', [])
+    if education:
+        pdf.chapter_title("Education")
+        edu_text = ""
+        for edu in education:
+            edu_text += f"- {edu}\n"
+        pdf.chapter_body(edu_text)
+    
     # Match Score
     pdf.chapter_title("Match Score")
     pdf.set_font('Arial', 'B', 24)

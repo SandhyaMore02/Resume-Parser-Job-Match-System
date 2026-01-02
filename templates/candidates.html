@@ -18,6 +18,7 @@
             <thead>
                 <tr style="border-bottom: 2px solid var(--border); color: var(--secondary);">
                     <th style="padding: 1rem;">Name</th>
+                    <th style="padding: 1rem;">Education</th>
                     <th style="padding: 1rem;">Experience</th>
                     <th style="padding: 1rem;">Match Score</th>
                     <th style="padding: 1rem;">Top Skills</th>
@@ -33,6 +34,13 @@
                             <span>{{ candidate.name }}</span>
                             <span style="font-size:0.8rem; color:var(--text-light);">{{ candidate.email }}</span>
                         </div>
+                    </td>
+                    <td style="padding: 1rem; font-size: 0.85rem;">
+                        {% if candidate.education %}
+                        {{ candidate.education[0] }}
+                        {% else %}
+                        <span style="color: var(--secondary);">-</span>
+                        {% endif %}
                     </td>
                     <td style="padding: 1rem;">{{ candidate.experience }} Yrs</td>
                     <td style="padding: 1rem;">

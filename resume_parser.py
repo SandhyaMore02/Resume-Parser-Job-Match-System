@@ -105,7 +105,53 @@ def extract_experience(text):
             
     if years:
         return max(years) # Return the highest number found as potential total experience
+    if years:
+        return max(years) # Return the highest number found as potential total experience
     return 0
+
+def extract_education(text):
+    """
+    Extracts education degrees and universities.
+    """
+    education = []
+    
+    # Common degrees
+    degrees = [
+        r'B\.?Tech', r'M\.?Tech', r'B\.?Sc', r'M\.?Sc', r'B\.?E', r'M\.?E', 
+        r'Ph\.?D', r'Bachelor', r'Master', r'Diploma', r'MBA', r'BCA', r'MCA'
+    ]
+    
+    for degree in degrees:
+        pattern = r'(?i)\b' + degree + r'\b.*?(?=\n|$)'
+        matches = re.findall(pattern, text)
+        for match in matches:
+            education.append(match.strip())
+            
+    return list(set(education))
+
+def extract_links(text):
+    """
+    Extracts URLs and specifically identifies LinkedIn and GitHub.
+    """
+    links = {
+        "linkedin": None,
+        "github": None,
+        "portfolio": []
+    }
+    
+    # Regex for URLs
+    url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+    urls = re.findall(url_pattern, text)
+    
+    for url in urls:
+        if "linkedin.com" in url:
+            links["linkedin"] = url
+        elif "github.com" in url:
+            links["github"] = url
+        else:
+            links["portfolio"].append(url)
+            
+    return links
 
 def parse_resume(file_path):
     if file_path.endswith('.pdf'):
@@ -118,6 +164,8 @@ def parse_resume(file_path):
     email, phone = extract_contact_info(text)
     name = extract_name(text)
     experience = extract_experience(text)
+    education = extract_education(text)
+    links = extract_links(text)
     
     # We clean the text for further processing
     clean_text = " ".join(text.split())
@@ -127,5 +175,7 @@ def parse_resume(file_path):
         "name": name,
         "email": email,
         "phone": phone,
-        "experience": experience
+        "experience": experience,
+        "education": education,
+        "links": links
     }
