@@ -11,10 +11,10 @@
     </div>
     <form action="/" method="post" enctype="multipart/form-data" class="upload-form">
         <div class="input-group file-input">
-            <input type="file" name="resume" id="resume" accept=".pdf,.docx" required>
+            <input type="file" name="resume" id="resume" accept=".pdf,.docx" multiple required>
             <label for="resume">
                 <i class="fa-solid fa-file-arrow-up"></i>
-                <span>Choose PDF/DOCX</span>
+                <span>Choose PDF/DOCX (Single or Multiple)</span>
             </label>
             <div class="file-name" id="file-name">No file chosen</div>
         </div>
@@ -27,7 +27,57 @@
     </form>
 </div>
 
-{% if match_score %}
+{% if ranking_list %}
+<!-- Bulk Analysis Results (Leaderboard) -->
+<div class="card">
+    <div class="card-header"
+        style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+        <h2><i class="fa-solid fa-trophy"></i> Candidate Ranking</h2>
+        {% if csv_file %}
+        <a href="{{ url_for('static', filename='uploads/' + csv_file) }}" class="btn-secondary">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+        </a>
+        {% endif %}
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--border); color: var(--secondary);">
+                <th style="padding: 1rem;">Rank</th>
+                <th style="padding: 1rem;">Candidate</th>
+                <th style="padding: 1rem;">Match Score</th>
+                <th style="padding: 1rem;">Experience</th>
+                <th style="padding: 1rem;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidate in ranking_list %}
+            <tr
+                style="border-bottom: 1px solid var(--border); background-color: {{ '#f0fdf4' if loop.index == 1 else 'transparent' }}">
+                <td style="padding: 1rem; font-weight: 700; color: {{ '#166534' if loop.index == 1 else 'inherit' }}">
+                    #{{ loop.index }}</td>
+                <td style="padding: 1rem;">
+                    <div style="font-weight: 500;">{{ candidate.name }}</div>
+                    <small style="color: var(--text-light);">{{ candidate.email }}</small>
+                </td>
+                <td style="padding: 1rem;">
+                    <span class="tag {{ 'matched' if candidate.match_score >= 70 else 'missing' }}">
+                        {{ candidate.match_score }}%
+                    </span>
+                </td>
+                <td style="padding: 1rem;">{{ candidate.experience }} Yrs</td>
+                <td style="padding: 1rem;">
+                    <a href="{{ url_for('static', filename='uploads/' + candidate.report_file) }}" target="_blank"
+                        class="btn-secondary" style="font-size: 0.8rem;">
+                        Report
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif match_score %}
 <!-- Results Section -->
 
 <!-- Stats Row -->
@@ -157,7 +207,9 @@
     const fileNameDisplay = document.getElementById('file-name');
     if (fileInput) {
         fileInput.addEventListener('change', function () {
-            if (this.files && this.files.length > 0) {
+            if (this.files && this.files.length > 1) {
+                fileNameDisplay.textContent = `${this.files.length} files selected`;
+            } else if (this.files && this.files.length === 1) {
                 fileNameDisplay.textContent = this.files[0].name;
             } else {
                 fileNameDisplay.textContent = "No file chosen";
