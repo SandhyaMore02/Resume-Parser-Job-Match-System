@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TalentLens | Resume Analytics{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>TalentLens</span>
+            </div>
+            <nav>
+                <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="{{ url_for('candidates') }}"
+                    class="{{ 'active' if request.endpoint == 'candidates' else '' }}">
+                    <i class="fa-solid fa-user-group"></i> Candidates
+                </a>
+                <a href="{{ url_for('jobs') }}" class="{{ 'active' if request.endpoint == 'jobs' else '' }}">
+                    <i class="fa-solid fa-briefcase"></i> Jobs
+                </a>
+                <a href="{{ url_for('reports') }}" class="{{ 'active' if request.endpoint == 'reports' else '' }}">
+                    <i class="fa-solid fa-file-pdf"></i> Reports
+                </a>
+                <a href="{{ url_for('settings') }}" class="{{ 'active' if request.endpoint == 'settings' else '' }}">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">JM</div>
+                <div class="info">
+                    <span>Job Manager</span>
+                    <small>Admin</small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>{% block header %}Dashboard{% endblock %}</h1>
+                <div class="actions">
+                    {% block actions %}
+                    <button class="btn-secondary">View History</button>
+                    {% endblock %}
+                </div>
+            </header>
+
+            <div class="content-grid">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

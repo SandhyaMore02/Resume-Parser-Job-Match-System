@@ -1,230 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TalentLens | Resume Analytics</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+{% block title %}TalentLens | Dashboard{% endblock %}
+{% block header %}Candidate Analysis Dashboard{% endblock %}
 
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i class="fa-solid fa-layer-group"></i>
-                <span>TalentLens</span>
-            </div>
-            <nav>
-                <a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="#"><i class="fa-solid fa-user-group"></i> Candidates</a>
-                <a href="#"><i class="fa-solid fa-briefcase"></i> Jobs</a>
-                <a href="#"><i class="fa-solid fa-file-pdf"></i> Reports</a>
-                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
-            </nav>
-            <div class="user-profile">
-                <div class="avatar">JM</div>
-                <div class="info">
-                    <span>Job Manager</span>
-                    <small>Admin</small>
-                </div>
-            </div>
-        </aside>
+{% block content %}
+<!-- Upload Section -->
+<div class="card upload-card">
+    <div class="card-header">
+        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Analyze New Resume</h2>
+    </div>
+    <form action="/" method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="input-group file-input">
+            <input type="file" name="resume" id="resume" accept=".pdf,.docx" required>
+            <label for="resume">
+                <i class="fa-solid fa-file-arrow-up"></i>
+                <span>Choose PDF/DOCX</span>
+            </label>
+            <div class="file-name" id="file-name">No file chosen</div>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="top-bar">
-                <h1>Candidate Analysis Dashboard</h1>
-                <div class="actions">
-                   <button class="btn-secondary">View History</button>
-                </div>
-            </header>
-            
-            <div class="content-grid">
-                
-                <!-- Upload Section -->
-                <div class="card upload-card">
-                    <div class="card-header">
-                        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Analyze New Resume</h2>
-                    </div>
-                    <form action="/" method="post" enctype="multipart/form-data" class="upload-form">
-                        <div class="input-group file-input">
-                            <input type="file" name="resume" id="resume" accept=".pdf,.docx" required>
-                            <label for="resume">
-                                <i class="fa-solid fa-file-arrow-up"></i>
-                                <span>Choose PDF/DOCX</span>
-                            </label>
-                            <div class="file-name" id="file-name">No file chosen</div>
-                        </div>
+        <div class="input-group job-desc">
+            <textarea name="job_description" id="job_description" rows="3" placeholder="Paste Job Description here..."
+                required>{{ job_description if job_description else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn-primary">Run Analysis</button>
+    </form>
+</div>
 
-                         <div class="input-group job-desc">
-                            <textarea name="job_description" id="job_description" rows="3"
-                                placeholder="Paste Job Description here..." required>{{ job_description if job_description else '' }}</textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">Run Analysis</button>
-                    </form>
-                </div>
+{% if match_score %}
+<!-- Results Section -->
 
-                {% if match_score %}
-                <!-- Results Section -->
-                
-                <!-- Stats Row -->
-                <div class="stats-row">
-                    <!-- Match Score Widget -->
-                     <div class="card stat-card score-card">
-                         <h3>Overall Match</h3>
-                         <div class="circle-chart" data-percentage="{{ match_score }}">
-                            <svg viewBox="0 0 36 36" class="circular-chart {{ 'green' if match_score >= 70 else 'orange' if match_score >= 40 else 'red' }}">
-                                <path class="circle-bg"
-                                  d="M18 2.0845
-                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                                />
-                                <path class="circle"
-                                  stroke-dasharray="{{ match_score }}, 100"
-                                  d="M18 2.0845
-                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                                />
-                                <text x="18" y="20.35" class="percentage">{{ match_score }}%</text>
-                            </svg>
-                         </div>
-                     </div>
-                     
-                     <!-- Experience Widget -->
-                     <div class="card stat-card">
-                         <h3>Experience Detected</h3>
-                         <div class="stat-value">
-                             <i class="fa-solid fa-business-time"></i>
-                             <span>{{ resume_data.experience }} Years</span>
-                         </div>
-                         <p class="stat-desc">Derived from work history.</p>
-                     </div>
-
-                    <!-- Contact Info Widget -->
-                    <div class="card stat-card info-card">
-                        <h3>Candidate Details</h3>
-                        <ul>
-                            <li><i class="fa-solid fa-user"></i> {{ resume_data.name }}</li>
-                            <li><i class="fa-solid fa-envelope"></i> {{ resume_data.email if resume_data.email else 'N/A' }}</li>
-                            <li><i class="fa-solid fa-phone"></i> {{ resume_data.phone if resume_data.phone else 'N/A' }}</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Detailed Breakdown -->
-                <div class="breakdown-grid">
-                    <!-- Skills Chart -->
-                    <div class="card chart-card">
-                        <h3>Skill Match Distribution</h3>
-                        <div class="chart-container">
-                            <canvas id="skillsChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Matched Skills List -->
-                    <div class="card skills-list-card">
-                        <h3><i class="fa-solid fa-check-circle success"></i> Matched Skills</h3>
-                         <div class="tags-container">
-                            {% for skill in matching_skills %}
-                            <span class="tag matched">{{ skill }}</span>
-                            {% endfor %}
-                            {% if not matching_skills %}
-                            <p class="empty-state">No direct matches found.</p>
-                            {% endif %}
-                         </div>
-                    </div>
-
-                     <!-- Missing Skills List -->
-                    <div class="card skills-list-card">
-                        <h3><i class="fa-solid fa-circle-exclamation error"></i> Missing Skills</h3>
-                         <div class="tags-container">
-                            {% for skill in missing_skills %}
-                            <span class="tag missing">{{ skill }}</span>
-                            {% endfor %}
-                            {% if not missing_skills %}
-                            <p class="empty-state">All required skills found!</p>
-                            {% endif %}
-                         </div>
-                    </div>
-                </div>
-
-                <!-- Export Action -->
-                <div class="export-section">
-                    <a href="{{ url_for('static', filename='uploads/' + report_filename) }}" class="btn-primary" target="_blank">
-                        <i class="fa-solid fa-file-arrow-down"></i> Download PDF Report
-                    </a>
-                </div>
-
-                {% endif %}
-
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <div class="flash-container">
-                    {% for message in messages %}
-                    <div class="flash-msg">{{ message }}</div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                {% endwith %}
-
-            </div>
-        </main>
+<!-- Stats Row -->
+<div class="stats-row">
+    <!-- Match Score Widget -->
+    <div class="card stat-card score-card">
+        <h3>Overall Match</h3>
+        <div class="circle-chart" data-percentage="{{ match_score }}">
+            <svg viewBox="0 0 36 36"
+                class="circular-chart {{ 'green' if match_score >= 70 else 'orange' if match_score >= 40 else 'red' }}">
+                <path class="circle-bg" d="M18 2.0845
+                     a 15.9155 15.9155 0 0 1 0 31.831
+                     a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle" stroke-dasharray="{{ match_score }}, 100" d="M18 2.0845
+                     a 15.9155 15.9155 0 0 1 0 31.831
+                     a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <text x="18" y="20.35" class="percentage">{{ match_score }}%</text>
+            </svg>
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // File Input name display
-        const fileInput = document.getElementById('resume');
-        const fileNameDisplay = document.getElementById('file-name');
-        if(fileInput) {
-            fileInput.addEventListener('change', function() {
-                if(this.files && this.files.length > 0) {
-                    fileNameDisplay.textContent = this.files[0].name;
-                } else {
-                    fileNameDisplay.textContent = "No file chosen";
-                }
-            });
-        }
+    <!-- Experience Widget -->
+    <div class="card stat-card">
+        <h3>Experience Detected</h3>
+        <div class="stat-value">
+            <i class="fa-solid fa-business-time"></i>
+            <span>{{ resume_data.experience }} Years</span>
+        </div>
+        <p class="stat-desc">Derived from work history.</p>
+    </div>
 
-        // Chart
-        {% if match_score %}
-        const matchedCount = Number("{{ matching_skills| length }}");
-        const missingCount = Number("{{ missing_skills| length }}");
+    <!-- Contact Info Widget -->
+    <div class="card stat-card info-card">
+        <h3>Candidate Details</h3>
+        <ul>
+            <li><i class="fa-solid fa-user"></i> {{ resume_data.name }}</li>
+            <li><i class="fa-solid fa-envelope"></i> {{ resume_data.email if resume_data.email else 'N/A' }}</li>
+            <li><i class="fa-solid fa-phone"></i> {{ resume_data.phone if resume_data.phone else 'N/A' }}</li>
+        </ul>
+    </div>
+</div>
 
-        const ctx = document.getElementById('skillsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Matched', 'Missing'],
-                datasets: [{
-                    data: [matchedCount, missingCount],
-                    backgroundColor: ['#2ecc71', '#e74c3c'],
-                    hoverBackgroundColor: ['#27ae60', '#c0392b'],
-                    borderWidth: 0,
-                    borderRadius: 5,
-                    cutout: '70%'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            usePointStyle: true,
-                            font: { family: 'Inter', size: 12 }
-                        }
+<!-- Detailed Breakdown -->
+<div class="breakdown-grid">
+    <!-- Skills Chart -->
+    <div class="card chart-card">
+        <h3>Skill Match Distribution</h3>
+        <div class="chart-container">
+            <canvas id="skillsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Matched Skills List -->
+    <div class="card skills-list-card">
+        <h3><i class="fa-solid fa-check-circle success"></i> Matched Skills</h3>
+        <div class="tags-container">
+            {% for skill in matching_skills %}
+            <span class="tag matched">{{ skill }}</span>
+            {% endfor %}
+            {% if not matching_skills %}
+            <p class="empty-state">No direct matches found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Missing Skills List -->
+    <div class="card skills-list-card">
+        <h3><i class="fa-solid fa-circle-exclamation error"></i> Missing Skills</h3>
+        <div class="tags-container">
+            {% for skill in missing_skills %}
+            <span class="tag missing">{{ skill }}</span>
+            {% endfor %}
+            {% if not missing_skills %}
+            <p class="empty-state">All required skills found!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Export Action -->
+<div class="export-section">
+    <a href="{{ url_for('static', filename='uploads/' + report_filename) }}" class="btn-primary" target="_blank">
+        <i class="fa-solid fa-file-arrow-down"></i> Download PDF Report
+    </a>
+</div>
+
+{% endif %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="flash-container">
+    {% for message in messages %}
+    <div class="flash-msg">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // File Input name display
+    const fileInput = document.getElementById('resume');
+    const fileNameDisplay = document.getElementById('file-name');
+    if (fileInput) {
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+            } else {
+                fileNameDisplay.textContent = "No file chosen";
+            }
+        });
+    }
+
+    // Chart
+    {% if match_score %}
+    const matchedCount = Number("{{ matching_skills| length }}");
+    const missingCount = Number("{{ missing_skills| length }}");
+
+    const ctx = document.getElementById('skillsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Matched', 'Missing'],
+            datasets: [{
+                data: [matchedCount, missingCount],
+                backgroundColor: ['#2ecc71', '#e74c3c'],
+                hoverBackgroundColor: ['#27ae60', '#c0392b'],
+                borderWidth: 0,
+                borderRadius: 5,
+                cutout: '70%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        usePointStyle: true,
+                        font: { family: 'Inter', size: 12 }
                     }
                 }
             }
-        });
-        {% endif %}
-    </script>
-</body>
-</html>
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

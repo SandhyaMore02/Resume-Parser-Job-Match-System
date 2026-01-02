@@ -67,5 +67,21 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/candidates')
+def candidates():
+    return render_template('placeholder.html', title='Candidates')
+
+@app.route('/jobs')
+def jobs():
+    return render_template('placeholder.html', title='Job Listings')
+
+@app.route('/reports')
+def reports():
+    return render_template('placeholder.html', title='Reports')
+
+@app.route('/settings')
+def settings():
+    return render_template('placeholder.html', title='Settings')
+
 if __name__ == '__main__':
     app.run(debug=True)
